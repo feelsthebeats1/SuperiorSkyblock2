@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'SuperiorSkyblock'
-version = "2025.2.1"
+version = "2025.2.1-custom"
 
 project.ext {
     targetFolder = file("target/")
@@ -28,6 +28,7 @@ allprojects {
         maven { url 'https://repo.bg-software.com/repository/api/' }
         maven { url 'https://repo.bg-software.com/repository/common/' }
         maven { url 'https://repo.bg-software.com/repository/dependencies/' }
+        maven { url 'https://nexus.scarsz.me/content/groups/public/' }
     }
 
     dependencies {
@@ -71,6 +72,8 @@ dependencies {
     // Spigot jars
     compileOnly "org.spigotmc:v1_8_R3-Taco:latest"
     compileOnly 'org.spigotmc:v1_16_R3-Tuinity:latest'
+
+    compileOnly 'com.discordsrv:discordsrv:1.28.0'
 }
 
 processResources {

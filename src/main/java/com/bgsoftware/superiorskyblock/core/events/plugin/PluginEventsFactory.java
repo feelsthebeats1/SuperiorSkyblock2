@@ -31,6 +31,9 @@ import com.bgsoftware.superiorskyblock.api.world.Dimension;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.core.ChunkPosition;
 import com.bgsoftware.superiorskyblock.core.events.args.PluginEventArgs;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.api.events.GameChatMessagePreProcessEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.PortalType;
 import org.bukkit.block.Biome;
@@ -431,7 +434,32 @@ public class PluginEventsFactory {
         islandChat.island = island;
         islandChat.superiorPlayer = superiorPlayer;
         islandChat.message = message;
-        return fireEvent(ISLAND_CHAT_EVENT, islandChat);
+
+        PluginEvent<IslandChat> pluginEvent = fireEvent(ISLAND_CHAT_EVENT, islandChat);
+
+        if (pluginEvent.isCancelled()) {
+            return pluginEvent;
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
+            try {Player player = superiorPlayer.asPlayer();
+                if (player != null && player.isOnline()) {
+
+                    String finalMessage = pluginEvent.getArgs().message;
+
+                    GameChatMessagePreProcessEvent discEvent = new GameChatMessagePreProcessEvent(
+                            "global",
+                            finalMessage,
+                            player
+                    );
+                    DiscordSRV.api.callEvent(discEvent);
+                    if (discEvent.isCancelled()) {
+                    }
+                }
+            } catch (Exception ex) {
+            }
+        }
+        return pluginEvent;
     }
 
     public static void callIslandChunkResetEvent(Island island, ChunkPosition chunkPosition) {
